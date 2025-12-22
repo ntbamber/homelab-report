@@ -3,6 +3,8 @@ services:
     build: .
     container_name: homelab-report
     restart: "no"
+    volumes:
+      - ${CONFIG_PATH}:/app/config/config.yaml
     labels:
       ofelia.enabled: "true"
       ofelia.job-run.homelab-report.schedule: "0 0 8 * * 1"
