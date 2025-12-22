@@ -1,21 +1,13 @@
 services:
-  # YOUR APP
   report:
     build: .
     container_name: homelab-report
-    # Mount config/env so you can change them without rebuilding
-    volumes:
-      - ./.env:/app/.env
-      - ./config:/app/config
-    # Don't restart automatically; the scheduler handles the start
     restart: "no"
-    # Labels tell the scheduler what to do with this container
     labels:
       ofelia.enabled: "true"
-      ofelia.job-run.homelab-report.schedule: "0 6 * * *"
+      ofelia.job-run.homelab-report.schedule: "0 0 8 * * 1"
       ofelia.job-run.homelab-report.command: "python main.py"
 
-  # THE SCHEDULER
   scheduler:
     image: mcuadros/ofelia:latest
     container_name: homelab-scheduler
