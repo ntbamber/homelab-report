@@ -32,7 +32,7 @@ services:
       - ${CONFIG_PATH}:/app/config/config.yaml
     labels:
       ofelia.enabled: "true"
-      ofelia.job-run.homelab-report.schedule: "0 6 * * *"
+      ofelia.job-run.homelab-report.schedule: "0 0 6 * * *"
       ofelia.job-run.homelab-report.command: "python main.py"
 
   scheduler:
