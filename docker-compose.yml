@@ -2,7 +2,8 @@ services:
   report:
     build: .
     container_name: homelab-report
-    restart: "no"
+    restart: unless-stopped
+    command: tail -f /dev/null
     environment:
       - CONFIG_PATH=${CONFIG_PATH}
       - SMTP_HOST=${SMTP_HOST}
