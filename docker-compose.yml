@@ -3,7 +3,7 @@ services:
     build: .
     container_name: homelab-report
     restart: unless-stopped
-    command: tail -f /dev/null
+    command: python main.py
     environment:
       - CONFIG_PATH=${CONFIG_PATH}
       - SMTP_HOST=${SMTP_HOST}
@@ -31,17 +31,3 @@ services:
       - JELLYSEERR_API_KEY=${JELLYSEERR_API_KEY}
     volumes:
       - ${CONFIG_PATH}:/app/config/config.yaml
-    labels:
-      ofelia.enabled: "true"
-      ofelia.job-run.homelab-report.schedule: "0 0 6 * * *"
-      ofelia.job-run.homelab-report.command: "python main.py"
-
-  scheduler:
-    image: mcuadros/ofelia:latest
-    container_name: homelab-scheduler
-    depends_on:
-      - report
-    command: daemon --docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    restart: always
