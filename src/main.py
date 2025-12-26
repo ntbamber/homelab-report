@@ -8,17 +8,18 @@ from dotenv import load_dotenv
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-# 1. SETUP & IMPORTS
-# ------------------------------------------------------------------------------
-# Ensure we can import from 'src' even if running from a different folder
+
+# 1. Setup & Imports
+# Set working directory for consistent pathing
 root_dir = Path(os.getcwd())
 if str(root_dir) not in sys.path:
     sys.path.append(str(root_dir))
 
+#Import custom modules
 from config.loader import load_config
-from src.email.sender import send_report  #IMPORT THE SENDER
+from src.email.sender import send_report
 
-# Import all your service modules
+# Import service modules
 from src.api import (
     adguard, bazarr, gluetun, jellyfin, jellyseerr, 
     lidarr, portainer, prowlarr, proxmox, 
@@ -33,13 +34,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("HomelabScheduler")
 
-# 2. MAIN EXECUTION (Your Original Logic)
-# ------------------------------------------------------------------------------
-def run_report_job():
-    """
-    Wrapper for the main logic to be called by the scheduler.
-    """
-    logger.info("--- Starting Daily Homelab Report ---")
+# 2. Main Execution
+def run_report_job(): 
+    # Main report logic to be called by the scheduler
+    logger.info("--Starting Daily Homelab Report--")
     load_dotenv()
     
     try:
@@ -48,7 +46,7 @@ def run_report_job():
         logger.error(f"Configuration Error: {e}")
         return
 
-    # Map config objects to their checker functions
+    # Map config objects to their summary building functions
     checks = [
         (adguard.build_summary, cfg.adguard, cfg.network),
         (bazarr.build_summary, cfg.bazarr, cfg.network),
@@ -68,17 +66,18 @@ def run_report_job():
 
     report = []
 
-    # Run checks in parallel to be fast
+    # Run summary building functions concurrently
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # Submit all tasks
         future_to_service = {
             executor.submit(func, c_cfg, n_cfg): c_cfg.name 
             for func, c_cfg, n_cfg in checks
         }
-        
-        # Process results as they complete
+
+        # Process results at completion
         for future in concurrent.futures.as_completed(future_to_service):
             service_name = future_to_service[future]
+            # Error handling for individual services
             try:
                 data = future.result()
                 report.append(data)
@@ -94,8 +93,7 @@ def run_report_job():
     # Sort report alphabetically by service name
     report.sort(key=lambda x: x['name'])
 
-    # 3. SEND THE EMAIL
-    # --------------------------------------------------------------------------
+    # 3. Emailing
     logger.info("Generating Email...")
     try:
         send_report(report)
@@ -103,14 +101,13 @@ def run_report_job():
     except Exception as e:
         logger.error(f"Failed to send email: {e}")
 
-# 3. SCHEDULER SETUP
-# ------------------------------------------------------------------------------
+# 3. Scheduler
 if __name__ == "__main__":
-    # 1. Load config initially to get the schedule settings
+    # 3.1. Load config to get schedule settings
     try:
         init_config = load_config()
-        cron_schedule = init_config.schedule.time      # e.g., "0 6 * * *"
-        user_timezone = init_config.schedule.timezone  # e.g., "America/New_York"
+        cron_schedule = init_config.schedule.time      # Cron schedule from config.yaml; e.g., "0 6 * * *"
+        user_timezone = init_config.schedule.timezone  # Timezone from config.yaml; e.g., "America/New_York"
         
         logger.info(f"Scheduler Initialized.")
         logger.info(f"Timezone: {user_timezone}")
@@ -133,7 +130,7 @@ if __name__ == "__main__":
     logger.info("Running immediate startup check...")
     run_report_job()
 
-    # 5. Start the Blocking Loop
+    # 5. Start the scheduling loop
     logger.info(f"Scheduler started. Waiting for next run at {cron_schedule}...")
     
     try:

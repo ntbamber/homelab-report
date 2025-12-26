@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# CONFIG
+# Configuration from environment variables
 SMTP_HOST = os.getenv("SMTP_HOST")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
 SMTP_USER = os.getenv("SMTP_USER")
@@ -18,9 +18,7 @@ EMAIL_FROM = os.getenv("EMAIL_FROM")
 EMAIL_TO = os.getenv("EMAIL_TO")
 
 def send_report(report_data):
-    """
-    Renders the HTML template with the report data and sends it.
-    """
+    #Renders HTML template with the report data and sends it.
     if not all([SMTP_HOST, SMTP_USER, SMTP_PASS, EMAIL_FROM, EMAIL_TO]):
         print("Email Config Missing in .env")
         return
@@ -49,7 +47,7 @@ def send_report(report_data):
         print(f"Connecting to {SMTP_HOST}:{SMTP_PORT}...")
         
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-            server.starttls(context=context) # Secure the connection
+            server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASS)
             server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
             

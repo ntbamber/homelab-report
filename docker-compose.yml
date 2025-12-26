@@ -3,7 +3,7 @@ services:
     build: .
     container_name: homelab-report
     restart: unless-stopped
-    command: python main.py
+    command: python src/main.py
     environment:
       - CONFIG_PATH=${CONFIG_PATH}
       - SMTP_HOST=${SMTP_HOST}

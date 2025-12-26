@@ -1,38 +1,61 @@
 import os
 import re
 import yaml
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
 from .schema import AppConfig
 
-def load_config(config_path: str = "config/config.yaml") -> AppConfig:
+# Logging setup
+logger = logging.getLogger(__name__)
+
+def load_config(custom_path: str = None) -> AppConfig:
+    """
+    Load configuration with the following priority:
+    1. Path passed as argument
+    2. Path in CONFIG_PATH environment variable
+    3. 'config.yaml' in the same directory as this script
+    """
     load_dotenv()
 
-    # 1. Try the explicit Docker path first (Most reliable for Portainer)
-    path = Path("/app/config/config.yaml")
-
-    # 2. If not found, look relative to the script (For local testing)
-    if not path.exists():
-        # Based on your image: loader.py is inside /config/
-        # So we go up 2 levels: config/ -> root/ -> then add config/config.yaml
-        current_dir = Path(__file__).parent
-        project_root = current_dir.parent  # Adjusted for your structure
-        path = project_root / "config" / "config.yaml"
-
-    if not path.exists():
-        print(f"DEBUG: Scanned for config at: {path}")
-        raise FileNotFoundError(f"Config file not found at: {path}")
-
-    # 3. Read and expand variables
-    with open(path, "r") as f:
-        content = f.read()
-
-    pattern = re.compile(r'\$\{([^}^:]+)\}')
-    def replace_env(match):
-        env_var = match.group(1)
-        return os.getenv(env_var, match.group(0))
-
-    expanded_content = pattern.sub(replace_env, content)
-    config_data = yaml.safe_load(expanded_content)
+    # 1. Determine path
+    env_path = os.getenv("CONFIG_PATH")
     
-    return AppConfig(**config_data)
+    if custom_path:
+        path = Path(custom_path)
+    elif env_path:
+        path = Path(env_path)
+    else:
+        # Fallback: Look for config.yaml in the SAME folder as loader.py
+        path = Path(__file__).parent / "config.yaml"
+
+    # 2. Verify existence
+    if not path.exists():
+        # Debug info showing where was searched
+        raise FileNotFoundError(
+            f"Config file not found! Scanned path: {path.resolve()}\n"
+            f"Current working dir: {os.getcwd()}"
+        )
+
+    logger.info(f"Loading config from: {path}")
+
+    # 3. Read and expand variables (Regex)
+    # Allow ${VAR} or ${VAR:default} syntax
+    variable_pattern = re.compile(r'\$\{([^}^:]+)(?::([^}]*))?\}')
+
+    def expand_vars(match):
+        env_var = match.group(1)
+        default_val = match.group(2) if match.group(2) is not None else match.group(0)
+        return os.getenv(env_var, default_val)
+
+    with open(path, "r") as f:
+        raw_content = f.read()
+
+    expanded_content = variable_pattern.sub(expand_vars, raw_content)
+    
+    # 4. Parse YAML
+    try:
+        config_data = yaml.safe_load(expanded_content)
+        return AppConfig(**config_data)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Error parsing YAML file: {e}")

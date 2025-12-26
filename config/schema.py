@@ -2,9 +2,7 @@ from __future__ import annotations
 from typing import Optional
 from pydantic import BaseModel, EmailStr, AnyUrl, Field, ConfigDict
 
-# -----------------------------
 # Helpers / base service models
-# -----------------------------
 class NamedService(BaseModel):
     name: str
     username: str | None = None
@@ -12,8 +10,7 @@ class NamedService(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 class UrlService(NamedService):
-    # AnyUrl accepts IPs, hostnames, http/https, and ports (good for homelab)
-    url: AnyUrl
+    url: AnyUrl #AnyUrl to accept varied URL formats (IP, hostname, port, etc)
 
 class ApiKeyService(UrlService):
     api_key: str
@@ -22,14 +19,10 @@ class BasicAuthService(UrlService):
     username: str
     password: str
 
-# -----------------------------
 # Top-level sections
-# -----------------------------
 class ScheduleConfig(BaseModel):
-    # Cron string, e.g. "0 6 * * *"
-    time: str
-    # IANA timezone, e.g. "America/New_York"
-    timezone: str
+    time: str # Cron string, e.g. "0 6 * * *"
+    timezone: str # IANA timezone, e.g. "America/New_York"
 
 class EmailConfig(BaseModel):
     smtp_server: str
@@ -43,9 +36,7 @@ class NetworkConfig(BaseModel):
     timeout: int = Field(ge=1)
     retries: int = Field(ge=0)
 
-# -----------------------------
 # Services
-# -----------------------------
 class ProxmoxConfig(NamedService):
     host: AnyUrl
     api_token: str
@@ -64,9 +55,6 @@ class AdGuardConfig(UrlService):
 
 class SpeedtestTrackerConfig(ApiKeyService):
     api_key: str
-
-class MySpeedConfig(UrlService):
-    pass
 
 class ProwlarrConfig(ApiKeyService):
     pass
@@ -95,34 +83,24 @@ class JellyfinConfig(ApiKeyService):
 class JellyseerrConfig(ApiKeyService):
     pass
 
-# -----------------------------
 # Master app config
-# -----------------------------
 class AppConfig(BaseModel):
     # top-level sections
     schedule: ScheduleConfig
     email: EmailConfig
     network: NetworkConfig
-
-    # infrastructure & network
+    # services
     proxmox: ProxmoxConfig
     portainer: PortainerConfig
     gluetun: GluetunConfig
     adguard: AdGuardConfig
     speedtest_tracker: SpeedtestTrackerConfig
-    myspeed: MySpeedConfig
-
-    # arr suite
     prowlarr: ProwlarrConfig
     sonarr: SonarrConfig
     radarr: RadarrConfig
     lidarr: LidarrConfig
     bazarr: BazarrConfig
-
-    # download clients
     qbittorrent: QbittorrentConfig
     slskd: SlskdConfig
-
-    # media servers
     jellyfin: JellyfinConfig
     jellyseerr: JellyseerrConfig
