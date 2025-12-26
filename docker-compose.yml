@@ -30,4 +30,4 @@ services:
       - JELLYFIN_PASSWORD=${JELLYFIN_PASSWORD}
       - JELLYSEERR_API_KEY=${JELLYSEERR_API_KEY}
     volumes:
-      - ${CONFIG_PATH}:/app/config/config.yaml
+      - ./config:/app/config
