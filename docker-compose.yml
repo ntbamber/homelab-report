@@ -30,4 +30,4 @@ services:
       - JELLYFIN_PASSWORD=${JELLYFIN_PASSWORD}
       - JELLYSEERR_API_KEY=${JELLYSEERR_API_KEY}
     volumes:
-      - ./src/config/config.yaml:/app/config/config.yaml
+      - /srv/config/homelab-report/config.yaml:/app/config/config.yaml
