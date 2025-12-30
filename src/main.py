@@ -16,7 +16,7 @@ if str(root_dir) not in sys.path:
     sys.path.append(str(root_dir))
 
 #Import custom modules
-from config.loader import load_config
+from src.config.loader import load_config
 from src.email.sender import send_report
 
 # Import service modules

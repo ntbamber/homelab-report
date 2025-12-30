@@ -1,0 +1,106 @@
+# ============================
+#  HOMELAB DAILY STATUS CONFIG
+# ============================
+
+# Scheduling (in cron format)
+schedule:
+  time: "0 6 * * *"  # Every day at 6 AM
+  timezone: "America/New_York"  # Set your timezone
+
+# Email Settings
+email:
+  smtp_server: "${SMTP_HOST}"
+  smtp_port: "${SMTP_PORT}"
+  username: "${SMTP_USER}"
+  password: "${SMTP_PASS}"
+  from_address: "${EMAIL_FROM}"
+  to_address: "${EMAIL_TO}"
+
+# Network Settings
+network:
+  timeout: 120
+  retries: 3
+
+#========================================================
+#                    Services
+#========================================================
+
+# Infrastructure & Network
+proxmox:
+  name: "Proxmox VE"
+  host: "https://192.168.1.49:8006"
+  username: "api@pam!emailer"
+  api_token: "${PROXMOX_TOKEN}"
+
+portainer:
+  name: "Portainer"
+  url: "https://192.168.1.38:9443"
+  token: "${PORTAINER_TOKEN}"
+  environment: 3
+
+gluetun:
+  name: "Gluetun VPN"
+  url: "http://192.168.1.38:8001"
+  api_key: "${GLUETUN_API_KEY}"
+
+adguard:
+  name: "AdGuard Home"
+  url: "http://192.168.1.40"
+  username: "${ADGUARD_USER}"
+  password: "${ADGUARD_PASS}"
+
+speedtest_tracker:
+  name: "Speedtest Tracker (VPN Speed)"
+  url: "http://192.168.1.38:9000"
+  api_key: "${SPEEDTEST_TRACKER_API_KEY}"
+
+# Arr Suite
+prowlarr:
+  name: "Prowlarr"
+  url: "http://192.168.1.38:9696"
+  api_key: "${PROWLARR_API_KEY}"
+
+sonarr:
+  name: "Sonarr"
+  url: "http://192.168.1.38:8989"
+  api_key: "${SONARR_API_KEY}"
+
+radarr:
+  name: "Radarr"
+  url: "http://192.168.1.38:7878"
+  api_key: "${RADARR_API_KEY}"
+
+lidarr:
+  name: "Lidarr"
+  url: "http://192.168.1.38:8686"
+  api_key: "${LIDARR_API_KEY}"
+
+bazarr:
+  name: "Bazarr"
+  url: "http://192.168.1.38:6767"
+  api_key: "${BAZARR_API_KEY}"
+
+# Download Clients
+qbittorrent:
+  name: "qBittorrent"
+  url: "http://192.168.1.38:8080"
+  username: "${QBITTORRENT_USER}"
+  password: "${QBITTORRENT_PASS}"
+
+slskd:
+  name: "SLSKD"
+  url: "http://192.168.1.38:5030"
+  api_key: "${SLSKD_API_KEY}"
+
+# Media Server
+jellyfin:
+  name: "Jellyfin"
+  url: "http://192.168.1.39:8096"
+  api_key: "${JELLYFIN_API_KEY}"
+  username: "admin"
+  password: "${JELLYFIN_PASSWORD}"
+
+jellyseerr:
+  name: "Jellyseerr"
+  url: "http://192.168.1.38:5055"
+  api_key: "${JELLYSEERR_API_KEY}"
