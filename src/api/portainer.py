@@ -15,10 +15,8 @@ def build_summary(cfg: PortainerConfig, net: NetworkConfig) -> Dict[str, Any]:
                 if not any(e['Id'] == env_id for e in all_envs):
                     env_id = all_envs[0]['Id']
             except: pass
-
             # Dashboard Stats
             dash = c.get(f"/api/endpoints/{env_id}/docker/dashboard").json()
-            
             # Stacks
             stacks_count = 0
             try:

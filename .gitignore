@@ -1,6 +1,2 @@
 .env
-config/config.yaml
-src/api-archive/*
-__pycache__/
-*.pyc
-.DS_Store
+src/config/config.yaml

@@ -9,23 +9,18 @@ def build_summary(cfg: LidarrConfig, net: NetworkConfig) -> Dict[str, Any]:
 
     try:
         with httpx.Client(base_url=base, verify=False, timeout=net.timeout) as c:
-            # 1. System Status
+            # System Status
             status = c.get("/system/status", params=params).json()
-            
-            # 2. Queue (Activity)
+            # Queue
             queue = c.get("/queue", params=params).json()
             queue_count = len(queue.get('records', [])) if isinstance(queue, dict) else len(queue)
-            
-            # 3. Missing (Wanted)
-            # Radarr/Sonarr use slightly different missing endpoints, usually /wanted/missing
+            # Missing
             missing_count = 0
             try:
-                # Try generic approach first
                 wanted = c.get("/wanted/missing", params={**params, "pageSize": 1, "page": 1}).json()
                 missing_count = wanted.get('totalRecords', 0)
             except: pass
-
-            # 4. History (Last Grab)
+            # History
             last_grab = "None"
             try:
                 hist = c.get("/history", params={**params, "pageSize": 1, "page": 1, "sortKey": "date", "sortDir": "desc"}).json()
@@ -33,7 +28,6 @@ def build_summary(cfg: LidarrConfig, net: NetworkConfig) -> Dict[str, Any]:
                 if records:
                      last_grab = records[0].get('sourceTitle', 'Unknown')
             except: pass
-            
             # Health
             try:
                 health = c.get("/health", params=params).json()

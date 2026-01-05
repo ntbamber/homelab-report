@@ -1,0 +1,96 @@
+# Example configuration file for the application.
+# Copy this file to config.yaml and update the values as needed.
+
+# Scheduling, email defaults, and network configuration:
+schedule:
+  time: "0 6 * * *" #CRON expression for scheduling
+  timezone: "Your/Timezone" # e.g., "America/New_York"
+
+email:
+  smtp_server: "${SMTP_HOST}"
+  smtp_port: "${SMTP_PORT}"
+  username: "${SMTP_USER}"
+  password: "${SMTP_PASS}"
+  from_address: "${EMAIL_FROM}"
+  to_address: "${EMAIL_TO}"
+
+network:
+  timeout: 120
+  retries: 3
+
+#Service configuration:
+proxmox:
+  name: "Proxmox"
+  host: "https://your-proxmox-host"
+  username: "user@realm!tokenid"
+  api_token: "${PROXMOX_TOKEN}"
+
+portainer:
+  name: "Portainer"
+  url: "https://your-portainer-url"
+  token: "${PORTAINER_TOKEN}"
+  environment: (your-enviorment-number)
+
+gluetun:
+  name: "Gluetun"
+  url: "http://your-gluetun-url"
+  api_key: "${GLUETUN_API_KEY}"
+
+adguard:
+  name: "AdGuard"
+  url: "http://your-adguard-url"
+  username: "${ADGUARD_USER}"
+  password: "${ADGUARD_PASS}"
+
+speedtest_tracker:
+  name: "Speedtest Tracker"
+  url: "http://your-speedtest-url"
+  api_key: "${SPEEDTEST_TRACKER_API_KEY}"
+
+prowlarr:
+  name: "Prowlarr"
+  url: "http://your-prowlarr-url"
+  api_key: "${PROWLARR_API_KEY}"
+
+sonarr:
+  name: "Sonarr"
+  url: "http://your-sonarr-url"
+  api_key: "${SONARR_API_KEY}"
+
+radarr:
+  name: "Radarr"
+  url: "http://your-radarr-url"
+  api_key: "${RADARR_API_KEY}"
+
+lidarr:
+  name: "Lidarr"
+  url: "http://your-lidarr-url"
+  api_key: "${LIDARR_API_KEY}"
+
+bazarr:
+  name: "Bazarr"
+  url: "http://your-bazarr-url"
+  api_key: "${BAZARR_API_KEY}"
+
+qbittorrent:
+  name: "qBittorrent"
+  url: "http://your-qbittorrent-url"
+  username: "${QBITTORRENT_USER}"
+  password: "${QBITTORRENT_PASS}"
+
+slskd:
+  name: "SLSKD"
+  url: "http://your-slskd-url"
+  api_key: "${SLSKD_API_KEY}"
+
+jellyfin:
+  name: "Jellyfin"
+  url: "http://your-jellyfin-url"
+  api_key: "${JELLYFIN_API_KEY}"
+  username: "${JELLYFIN_USERNAME}"
+  password: "${JELLYFIN_PASSWORD}"
+
+jellyseerr:
+  name: "Jellyseerr"
+  url: "http://your-jellyseerr-url"
+  api_key: "${JELLYSEERR_API_KEY}"

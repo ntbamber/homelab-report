@@ -9,22 +9,18 @@ def build_summary(cfg: QbittorrentConfig, net: NetworkConfig) -> Dict[str, Any]:
         with httpx.Client(base_url=str(cfg.url).rstrip("/"), verify=False, timeout=net.timeout) as c:
             # Login
             c.post("/api/v2/auth/login", data={"username": cfg.username, "password": cfg.password})
-            
             # Global Transfer Info
             info = c.get("/api/v2/transfer/info").json()
             # All Torrents
             torrents = c.get("/api/v2/torrents/info").json()
-
             # Process Data
             active = [t for t in torrents if t['state'] in ('downloading', 'uploading', 'stalledDL')]
             errored = [t for t in torrents if t['state'] in ('error', 'missingFiles')]
-            
             # Categories
             cats = {}
             for t in torrents:
                 cat = t.get('category') or 'Uncategorized'
                 cats[cat] = cats.get(cat, 0) + 1
-
             # Top 3 Active
             top_active = sorted(active, key=lambda x: x.get('dlspeed', 0), reverse=True)[:3]
             top_active_clean = [{

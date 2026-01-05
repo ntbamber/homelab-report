@@ -4,27 +4,23 @@ from config.schema import ProxmoxConfig, NetworkConfig
 
 
 def check_response(r):
-    # If we got a 401/403, throw error immediately
+    # Raise error for 400 errors
     if r.status_code in (401, 403):
         raise Exception(f"Auth Failed ({r.status_code})")
-    
-    # If we got HTML (like a login page), throw error with snippet
+    # Throw error for HTML responses
     if "text/html" in r.headers.get("content-type", ""):
         title = "Unknown Page"
         if "<title>" in r.text:
             title = r.text.split("<title>")[1].split("</title>")[0]
         raise Exception(f"Endpoint returned HTML (Page: {title}) instead of JSON. Check URL/Auth.")
-        
     # Otherwise try to return JSON
     try:
         return r.json()
     except:
         raise Exception(f"Invalid JSON response: {r.text[:50]}...")
 
-
 def build_summary(cfg: ProxmoxConfig, net: NetworkConfig) -> Dict[str, Any]:
     report = {"name": cfg.name, "status": "healthy", "reason": None}
-    
     # Proxmox Header Auth
     headers = {"Authorization": f"PVEAPIToken={cfg.username}={cfg.api_token}"}
     base = f"{str(cfg.host).rstrip('/')}/api2/json"

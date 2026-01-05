@@ -9,7 +9,7 @@ def build_summary(cfg: JellyseerrConfig, net: NetworkConfig) -> Dict[str, Any]:
     try:
         with httpx.Client(base_url=str(cfg.url).rstrip("/"), headers=headers, verify=False, timeout=net.timeout) as c:
             # Stats
-            # Jellyseerr doesn't have a single "stats" endpoint, we count requests
+            # Jellyseerr doesn't have a simple stats endpoint, so I am fetching counts individually
             pending = c.get("/api/v1/request", params={"take": 0, "filter": "pending"}).json().get("pageInfo", {}).get("results", 0)
             approved = c.get("/api/v1/request", params={"take": 0, "filter": "approved"}).json().get("pageInfo", {}).get("results", 0)
             
